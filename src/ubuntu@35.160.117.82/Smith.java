@@ -1,10 +1,12 @@
 package agent;
 
 import java.io.IOException;
-import java.util.Random;
+import java.util.ArrayList;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
+import jade.domain.AMSService;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -17,8 +19,6 @@ public class Smith extends Agent {
 	private String serverIP = "";
 	private int serverPort = 0;
 	private long timeForTickerBehaviour = 0;
-	
-	final String fibRange = "50";
 	
 	protected void setup() {
 		// Printout a welcome message
@@ -82,15 +82,13 @@ public class Smith extends Agent {
 
 		@Override
 		protected void onTick() {
-			// TODO Auto-generated method stub 
+			// TODO Auto-generated method stub
+			// create a tcp connection here
 			
-			//a tcp connection socket opened here
 			ClientSocket soc = new ClientSocket(serverIP,serverPort);
 			try {
-				soc.connect(); //socket connected here
-				String serverResponse = soc.send(fibRange); // sends the fiboRange to server and receives the output;
+				soc.connect();
 				System.out.println("Connection Established with ip: "+serverIP+" at port: "+serverPort+" at Ticker value: "+timeForTickerBehaviour);
-				System.out.println("Fibo series for n("+ fibRange +") ="+serverResponse);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

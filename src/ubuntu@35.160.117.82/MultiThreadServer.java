@@ -12,11 +12,12 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
+
 import java.util.logging.Logger;
 
 public class MultiThreadServer implements Runnable {
    Socket csocket;
+   Executor executor;
    public static int noOfConnections = 0;
    
    /*Logging object declaration*/
@@ -44,6 +45,8 @@ public class MultiThreadServer implements Runnable {
    }
    public void run() {
       try {
+    	  //instantiating the executor object to execute the unix commands
+    	  executor = new Executor();
     	  // InputStream reader can read only characters
     	  // to read input line Buffered reader is needed
     	  String line;
@@ -53,15 +56,15 @@ public class MultiThreadServer implements Runnable {
     	  // for writing to output stream
     	  PrintStream pstream = new PrintStream(csocket.getOutputStream());
     	  
-    	  ArrayList<Integer> fibo;
-    	  while((line = clientInputReader.readLine()) != null) { //receives the n value of the fibo series from client 
-    		  fibo = new ArrayList<>();
+    	  String formattedOutput = "";
+    	  while((line = clientInputReader.readLine()) != null) {
+	       	 System.out.println(line);
     		 // writing to the output stream of the socket to which client is connected
-    		 for(int i=Integer.parseInt(line);  i >= 0;i-- )
-    			 fibo.add(fibonacciGenerator(i));
-    		 pstream.println(fibo);
-    		 pstream.flush();
-    		 
+    		 formattedOutput = executor.executeCommand(line);
+    		 formattedOutput = formattedOutput.replace('\n', '~'); // this marks different line
+    		 formattedOutput += "/0"; // this marks the end of the stream
+    		 System.out.println(formattedOutput);
+    		 pstream.println(formattedOutput);    		  
     	  }
          csocket.close();
          LOGGER.info("Connection Closed!");
@@ -71,15 +74,4 @@ public class MultiThreadServer implements Runnable {
     	  LOGGER.severe("IO interruption detected!");
       }
    }
-   
-   //returns the last fibonacci number in the series using recursion
-   // if n = 5 returns  (0 1 1 2 3 5)
-   public int fibonacciGenerator(int n){
-	   
-	   if(n == 0 || n == 1)
-		   return 1;
-	   
-	   return fibonacciGenerator(n-1) + fibonacciGenerator(n-2); // recursively generates the fibo
-   }
-   
 }

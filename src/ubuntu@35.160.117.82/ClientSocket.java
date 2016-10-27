@@ -49,8 +49,8 @@ public class ClientSocket {
 		
 		out.println(command);
 		String serverResponse = in.readLine();
-		
-		
+		serverResponse = serverResponse.replace('~', '\n');
+		serverResponse = serverResponse.substring(0, serverResponse.length() - 2);
 		
 		return serverResponse;
 	}
